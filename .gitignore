@@ -1,0 +1,25 @@
+# Build outputs and local artifacts
+out/
+out-*/
+*.o
+*.a
+*.mod
+*.cmd
+
+# Never commit binaries, images, modules or secrets
+*.img
+*.bin
+*.ko
+*.tar.gz
+*.tar
+*.apk
+*.pem
+*.der
+*.key
+*.jks
+*.keystore
+
+# Editor and OS noise
+*~
+*.swp
+.DS_Store
