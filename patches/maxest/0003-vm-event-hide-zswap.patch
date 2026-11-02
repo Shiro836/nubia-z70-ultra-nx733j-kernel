@@ -1,0 +1,35 @@
+--- a/include/linux/vm_event_item.h
++++ b/include/linux/vm_event_item.h
+@@ -145,10 +145,12 @@
+ #ifdef CONFIG_KSM
+ 		COW_KSM,
+ #endif
++#ifndef __GENKSYMS__
+ #ifdef CONFIG_ZSWAP
+ 		ZSWPIN,
+ 		ZSWPOUT,
+ #endif
++#endif
+ #ifdef CONFIG_X86
+ 		DIRECT_MAP_LEVEL2_SPLIT,
+ 		DIRECT_MAP_LEVEL3_SPLIT,
+@@ -162,6 +164,19 @@
+ 		NR_VM_EVENT_ITEMS
+ };
+ 
++/*
++ * Stock (pre-ZSWAP) modules size buffers passed to the exported
++ * all_vm_events() with NR_VM_EVENT_ITEMS, which is 103 in this config.  The
++ * ZSWAP entries are the last entries in the enum, so when ZSWAP is enabled the
++ * ABI-visible count is NR_VM_EVENT_ITEMS - 2.  Under __GENKSYMS__ the ZSWAP
++ * entries are hidden, so the count is already the stock one.
++ */
++#if defined(CONFIG_ZSWAP) && !defined(__GENKSYMS__)
++#define NR_VM_EVENT_ITEMS_ABI (NR_VM_EVENT_ITEMS - 2)
++#else
++#define NR_VM_EVENT_ITEMS_ABI NR_VM_EVENT_ITEMS
++#endif
++
+ #ifndef CONFIG_TRANSPARENT_HUGEPAGE
+ #define THP_FILE_ALLOC ({ BUILD_BUG(); 0; })
+ #define THP_FILE_FALLBACK ({ BUILD_BUG(); 0; })

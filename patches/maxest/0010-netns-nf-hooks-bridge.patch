@@ -1,0 +1,31 @@
+--- a/include/net/netns/netfilter.h
++++ b/include/net/netns/netfilter.h
+@@ -25,9 +25,6 @@
+ #ifdef CONFIG_NETFILTER_FAMILY_ARP
+ 	struct nf_hook_entries __rcu *hooks_arp[NF_ARP_NUMHOOKS];
+ #endif
+-#ifdef CONFIG_NETFILTER_FAMILY_BRIDGE
+-	struct nf_hook_entries __rcu *hooks_bridge[NF_INET_NUMHOOKS];
+-#endif
+ #if IS_ENABLED(CONFIG_NF_DEFRAG_IPV4)
+ 	unsigned int defrag_ipv4_users;
+ #endif
+@@ -35,6 +32,18 @@
+ 	unsigned int defrag_ipv6_users;
+ #endif
+ 
++#if defined(CONFIG_NETFILTER_FAMILY_BRIDGE) && defined(CONFIG_ANDROID_KABI_RESERVE)
++	/*
++	 * The stock inline hooks_bridge[NF_INET_NUMHOOKS] array would grow
++	 * netns_nf (embedded in struct net) by 40 bytes and shift every later
++	 * struct net member.  Store a pointer in the existing KABI reserve
++	 * instead (same 8 bytes); the backing array is allocated per netns.
++	 * genksyms still sees the original u64 reserve, so exported CRCs stay
++	 * at the stock values.
++	 */
++	ANDROID_KABI_USE(1, struct nf_hook_entries __rcu **hooks_bridge);
++#else
+ 	ANDROID_KABI_RESERVE(1);
++#endif
+ };
+ #endif

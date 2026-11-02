@@ -1,0 +1,2 @@
+# ipset. Verified CRC-clean alone and on top of extras_net: 0/680, symvers identical to base.
+CONFIG_IP_SET=y

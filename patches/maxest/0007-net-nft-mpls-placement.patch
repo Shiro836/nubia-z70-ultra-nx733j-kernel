@@ -1,0 +1,32 @@
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -146,9 +146,6 @@
+ #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
+ 	struct netns_ct		ct;
+ #endif
+-#if defined(CONFIG_NF_TABLES) || defined(CONFIG_NF_TABLES_MODULE)
+-	struct netns_nftables	nft;
+-#endif
+ #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
+ 	struct netns_ft ft;
+ #endif
+@@ -161,6 +158,19 @@
+ 	/* Used to store attached BPF programs */
+ 	struct netns_bpf	bpf;
+ 
++#if defined(CONFIG_NF_TABLES) || defined(CONFIG_NF_TABLES_MODULE)
++#ifndef __GENKSYMS__
++	/*
++	 * NF_TABLES' 16-byte per-net state is placed in the existing 24-byte
++	 * alignment hole between bpf and the cache-line-aligned xfrm.  This
++	 * keeps sizeof(struct net) and every existing member offset unchanged.
++	 * genksyms does not see the member, so the exported CRCs stay at the
++	 * stock values.
++	 */
++	struct netns_nftables	nft;
++#endif
++#endif
++
+ 	/* Note : following structs are cache line aligned */
+ #ifdef CONFIG_XFRM
+ 	struct netns_xfrm	xfrm;

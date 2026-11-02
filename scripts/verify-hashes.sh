@@ -40,6 +40,7 @@ case "$MODE" in
     check "configs/stock.config"                "f21f8de739dc13dd5af6fda290ab62322968836af5133f4cb32c02c1a4f6ff18"
     check "configs/sukisu_only.config"          "b3910c8ebb4e87f7070d54aa8f267a57462d2d78b1afc8fc6968593142a9a10c"
     check "configs/full.config"                 "d90af3c0424fe651751c00e479e8c500c01b9c857ea4a451894c8d400c089f1e"
+    check "configs/maxest.config"               "96e6825461eba8795cd4abc378396259104cb020a99a15fa79e3375902d8c61e"
     check "configs/docker_systemd_v2.fragment"  "7c987b8a8de0480c5fd7c3baf75ca060356c10992333075842cbd8392e0d90fd"
     check "configs/sukisu.fragment"             "fd0fd1a95396ac1a4f2e4ad4afcd86bafdf5322bb6a8a72f89b5d8966888cf24"
     ;;

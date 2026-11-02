@@ -1,0 +1,4 @@
+# Extra USB serial adapters, built as modules for the running fully juiced kernel.
+# Parent USB_SERIAL is already =m in the stock config.
+CONFIG_USB_SERIAL_CH341=m
+CONFIG_USB_SERIAL_CP210X=m

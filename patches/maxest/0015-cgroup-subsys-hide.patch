@@ -1,0 +1,34 @@
+--- a/include/linux/cgroup_subsys.h
++++ b/include/linux/cgroup_subsys.h
+@@ -30,16 +30,20 @@
+ #endif
+ 
+ #if IS_ENABLED(CONFIG_CGROUP_DEVICE)
++#ifndef __GENKSYMS__
+ SUBSYS(devices)
+ #endif
++#endif
+ 
+ #if IS_ENABLED(CONFIG_CGROUP_FREEZER)
+ SUBSYS(freezer)
+ #endif
+ 
+ #if IS_ENABLED(CONFIG_CGROUP_NET_CLASSID)
++#ifndef __GENKSYMS__
+ SUBSYS(net_cls)
+ #endif
++#endif
+ 
+ #if IS_ENABLED(CONFIG_CGROUP_PERF)
+ SUBSYS(perf_event)
+@@ -54,8 +58,10 @@
+ #endif
+ 
+ #if IS_ENABLED(CONFIG_CGROUP_PIDS)
++#ifndef __GENKSYMS__
+ SUBSYS(pids)
+ #endif
++#endif
+ 
+ #if IS_ENABLED(CONFIG_CGROUP_RDMA)
+ SUBSYS(rdma)

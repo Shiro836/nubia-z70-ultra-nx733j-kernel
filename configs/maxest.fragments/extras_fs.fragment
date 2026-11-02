@@ -1,0 +1,6 @@
+# Filesystem extras group (bisect on v3 base). Suspected of changing exported CRCs.
+CONFIG_NTFS3_FS=y
+CONFIG_SQUASHFS=y
+CONFIG_BLK_DEV_NBD=y
+CONFIG_ISO9660_FS=y
+CONFIG_UDF_FS=y

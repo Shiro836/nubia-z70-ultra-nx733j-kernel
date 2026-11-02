@@ -1,0 +1,10 @@
+# Maximal CRC-clean Docker/systemd set (stock modules stay byte-identical).
+CONFIG_NAMESPACES=y
+CONFIG_PID_NS=y
+CONFIG_IPC_NS=y
+CONFIG_USER_NS=y
+CONFIG_POSIX_MQUEUE=y
+CONFIG_DEVTMPFS=y
+CONFIG_DEVTMPFS_MOUNT=y
+CONFIG_VXLAN=y
+CONFIG_UNIX_DIAG=y

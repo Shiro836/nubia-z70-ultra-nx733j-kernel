@@ -1,0 +1,2 @@
+# CRIU support. Verified CRC-clean alone and together with extras_net + extras_ipset: 0/680.
+CONFIG_CHECKPOINT_RESTORE=y

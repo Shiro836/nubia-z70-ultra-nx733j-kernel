@@ -1,0 +1,2 @@
+# USB gadget RNDIS (bisect on v3 base).
+CONFIG_USB_CONFIGFS_RNDIS=y

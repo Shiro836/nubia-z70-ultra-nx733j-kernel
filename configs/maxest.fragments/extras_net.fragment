@@ -1,0 +1,8 @@
+# Network extras group (IPVLAN excluded: it selects NET_L3_MASTER_DEV and changes struct net_device).
+CONFIG_NET_SCH_CAKE=y
+CONFIG_NET_SCH_PIE=y
+CONFIG_NET_SCH_FQ_PIE=y
+CONFIG_MACVLAN=y
+# CONFIG_CGROUP_NET_CLASSID is not set  (selects SOCK_CGROUP_DATA -> struct sock CRC break)
+# IP_SET lives in extras_ipset.fragment; tested alone and with this group -> 0/680.
+CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y

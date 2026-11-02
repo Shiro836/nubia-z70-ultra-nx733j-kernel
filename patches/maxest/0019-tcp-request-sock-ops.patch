@@ -1,0 +1,25 @@
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -2160,10 +2160,6 @@
+ 					  const struct sock *sk,
+ 					  const struct sk_buff *skb);
+ #endif
+-#ifdef CONFIG_SYN_COOKIES
+-	__u32 (*cookie_init_seq)(const struct sk_buff *skb,
+-				 __u16 *mss);
+-#endif
+ 	struct dst_entry *(*route_req)(const struct sock *sk,
+ 				       struct sk_buff *skb,
+ 				       struct flowi *fl,
+@@ -2175,6 +2171,11 @@
+ 			   struct tcp_fastopen_cookie *foc,
+ 			   enum tcp_synack_type synack_type,
+ 			   struct sk_buff *syn_skb);
++#if defined(CONFIG_SYN_COOKIES) && !defined(__GENKSYMS__)
++	/* Appended so every stock member keeps its offset. */
++	__u32 (*cookie_init_seq)(const struct sk_buff *skb,
++				 __u16 *mss);
++#endif
+ };
+ 
+ extern const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops;

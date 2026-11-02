@@ -1,0 +1,26 @@
+--- a/block/blk-cgroup.h
++++ b/block/blk-cgroup.h
+@@ -73,10 +73,6 @@
+ 	struct blkg_iostat_set		iostat;
+ 
+ 	struct blkg_policy_data		*pd[BLKCG_MAX_POLS];
+-#ifdef CONFIG_BLK_CGROUP_PUNT_BIO
+-	spinlock_t			async_bio_lock;
+-	struct bio_list			async_bios;
+-#endif
+ 	union {
+ 		struct work_struct	async_bio_work;
+ 		struct work_struct	free_work;
+@@ -91,6 +87,12 @@
+ 	struct rcu_head			rcu_head;
+ 
+ 	ANDROID_OEM_DATA(1);
++
++#if defined(CONFIG_BLK_CGROUP_PUNT_BIO) && !defined(__GENKSYMS__)
++	/* Appended: preserves every stock offset; kernel-internal struct. */
++	spinlock_t			async_bio_lock;
++	struct bio_list			async_bios;
++#endif
+ };
+ 
+ struct blkcg {

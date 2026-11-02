@@ -1,0 +1,2 @@
+# ZRAM writeback alone (bisect on v3 base).
+CONFIG_ZRAM_WRITEBACK=y

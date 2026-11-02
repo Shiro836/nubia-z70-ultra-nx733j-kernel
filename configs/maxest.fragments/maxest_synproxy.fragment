@@ -1,0 +1,2 @@
+# Maxest batch 2: restore NFT_SYNPROXY (relocated struct members).
+CONFIG_NFT_SYNPROXY=y

@@ -1,0 +1,11 @@
+--- a/net/netfilter/nfnetlink_hook.c
++++ b/net/netfilter/nfnetlink_hook.c
+@@ -265,7 +265,7 @@
+ 		break;
+ 	case NFPROTO_BRIDGE:
+ #ifdef CONFIG_NETFILTER_FAMILY_BRIDGE
+-		if (hook >= ARRAY_SIZE(net->nf.hooks_bridge))
++		if (hook >= NF_INET_NUMHOOKS)
+ 			return ERR_PTR(-EINVAL);
+ 		hook_head = rcu_dereference(net->nf.hooks_bridge[hook]);
+ #endif

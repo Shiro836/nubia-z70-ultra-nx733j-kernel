@@ -1,0 +1,51 @@
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1071,10 +1071,6 @@
+ 
+ 	struct nameidata		*nameidata;
+ 
+-#ifdef CONFIG_SYSVIPC
+-	struct sysv_sem			sysvsem;
+-	struct sysv_shm			sysvshm;
+-#endif
+ #ifdef CONFIG_DETECT_HUNG_TASK
+ 	unsigned long			last_switch_count;
+ 	unsigned long			last_switch_time;
+@@ -1516,6 +1512,29 @@
+ 	 */
+ 	struct callback_head		l1d_flush_kill;
+ #endif
++#if defined(CONFIG_SYSVIPC) && !defined(__GENKSYMS__)
++	/*
++	 * SYSVIPC state is carried in the existing KABI reserve slots: one
++	 * 8-byte slot for sysv_sem and two adjacent 8-byte slots for the
++	 * 16-byte sysv_shm list head.  sizeof(task_struct) and every existing
++	 * member offset are unchanged.  genksyms takes the #else branch and
++	 * still sees the original u64 reserves, so the CRCs of every exported
++	 * symbol touching task_struct stay at the stock values.
++	 */
++	ANDROID_KABI_USE(1, struct sysv_sem sysvsem);
++	union {
++		struct sysv_shm sysvshm;
++		struct {
++			u64 android_kabi_reserved2;
++			u64 android_kabi_reserved3;
++		};
++	};
++	ANDROID_KABI_RESERVE(4);
++	ANDROID_KABI_RESERVE(5);
++	ANDROID_KABI_RESERVE(6);
++	ANDROID_KABI_RESERVE(7);
++	ANDROID_KABI_RESERVE(8);
++#else
+ 	ANDROID_KABI_RESERVE(1);
+ 	ANDROID_KABI_RESERVE(2);
+ 	ANDROID_KABI_RESERVE(3);
+@@ -1524,6 +1543,7 @@
+ 	ANDROID_KABI_RESERVE(6);
+ 	ANDROID_KABI_RESERVE(7);
+ 	ANDROID_KABI_RESERVE(8);
++#endif
+ 
+ #ifdef CONFIG_RV
+ 	/*

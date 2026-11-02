@@ -1,0 +1,11 @@
+--- a/include/linux/fsnotify_backend.h
++++ b/include/linux/fsnotify_backend.h
+@@ -241,7 +241,7 @@
+ 			struct ucounts *ucounts;
+ 		} inotify_data;
+ #endif
+-#ifdef CONFIG_FANOTIFY
++#if defined(CONFIG_FANOTIFY) && !defined(__GENKSYMS__)
+ 		struct fanotify_group_private_data {
+ 			/* Hash table of events for merge */
+ 			struct hlist_head *merge_hash;

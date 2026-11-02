@@ -1,0 +1,4 @@
+# Maxest batch 2: cgroup controllers (ABI-hidden subsystem count).
+CONFIG_CGROUP_DEVICE=y
+CONFIG_CGROUP_PIDS=y
+CONFIG_CGROUP_NET_CLASSID=y

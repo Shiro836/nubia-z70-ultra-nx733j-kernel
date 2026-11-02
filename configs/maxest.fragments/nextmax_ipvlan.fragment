@@ -1,0 +1,2 @@
+# IPVLAN as a module; IPVLAN_L3S (def_bool y) selects NET_L3_MASTER_DEV.
+CONFIG_IPVLAN=m

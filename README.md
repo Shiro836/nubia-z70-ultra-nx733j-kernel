@@ -18,15 +18,21 @@ pinned toolchain reproduces the stock `Image` byte for byte
 (sha256 `11bf8868...`, 36,596,224 bytes), and the built config matches the
 device's running config.
 
-Two modified variants are provided:
+The current recommended variant is **maxest**: the largest feature set that
+still passes the stock-module ABI gate, prepared for release v2.0. It is a
+kernel-only build with the stock vendor modules. See
+[docs/MAXEST.md](docs/MAXEST.md) for the feature set, ABI techniques, layout
+deltas and boot-test result.
+
+Three earlier modified variants are also provided:
 
 - **SukiSU only**: stock config plus SukiSU Ultra v4.3.0 as a built-in driver
   (`CONFIG_KSU=y`).
 - **Full**: the Docker/systemd fragment plus SukiSU.
+- **Control**: Docker/systemd only, no SukiSU.
 
-A **control** variant (Docker/systemd only, no SukiSU) is also documented. All
-three modified kernels were packaged with the OEM-signature-preserving boot
-layout and boot-tested on the device.
+All of the modified kernels were packaged with the OEM-signature-preserving
+boot layout and boot-tested on the device.
 
 The modified images are not byte-identical to stock, by construction. Their
 compatibility target is the stock vendor module set: the CRC gate reported
@@ -68,6 +74,8 @@ git -C common checkout 3637f4904cf55eb3e7eccb9d747d754a4e199740
 # 3. Build
 KERNEL_SRC="$PWD" ./scripts/build-kernel.sh full
 #    or: stock | sukisu_only | docker_only
+#    For maxest, apply patches/maxest/ and use the ordered fragment list in
+#    configs/maxest.fragments/FRAGMENTS.txt; see docs/MAXEST.md.
 
 # 4. Check the artifacts
 ./scripts/verify-hashes.sh artifacts "$PWD/out-full" full
@@ -97,6 +105,7 @@ Fragments are selected through `defconfig_fragments` in
 
 | Variant | `defconfig_fragments` | Image sha256 | Image size | config sha256 |
 |---|---|---|---|---|
+| maxest (recommended) | `configs/maxest.fragments/` (23 fragments, exact order in `FRAGMENTS.txt`) | `f1f488c6f2d975e4202b054073dbf5ac4f4823d0185bea8373b82e2abe606e82` | 51,915,264 | `96e6825461eba8795cd4abc378396259104cb020a99a15fa79e3375902d8c61e` |
 | stock | none | `11bf8868967b8f1657f9364afd48e0be2a351736485994fb5efae21aef595896` | 36,596,224 | `f21f8de739dc13dd5af6fda290ab62322968836af5133f4cb32c02c1a4f6ff18` |
 | sukisu_only | `["sukisu.fragment"]` | `241945762e191b45a6cce8da07b2505bde9ad0e4d1899bf32fe3e2aaf470f16d` | 36,796,928 | `b3910c8ebb4e87f7070d54aa8f267a57462d2d78b1afc8fc6968593142a9a10c` |
 | full | `["docker_systemd_v2.fragment", "sukisu.fragment"]` | `5735e5dd219d159b155557e61379d381baad936bfb03052e6ffb86f202191e11` | 37,059,072 | `d90af3c0424fe651751c00e479e8c500c01b9c857ea4a451894c8d400c089f1e` |
@@ -107,6 +116,7 @@ Module compatibility:
 | Variant | `Module.symvers` sha256 | exports |
 |---|---|---|
 | stock | not recorded | not recorded |
+| maxest | `3e4befb4681985494c22649bda0669ef2459f15aa109280f70248521cdac7331` | 9,195 |
 | sukisu_only | `5139c8777949c23c5b7ccc5624099bb6d7ead4275f8515df8db81c1c2228d490` | 9,155 |
 | full | `e0785b239df0a4123c859fe7939adfe6d048a343098572bb998642fe78d1aca1` | 9,161 |
 | control | `e0785b239df0a4123c859fe7939adfe6d048a343098572bb998642fe78d1aca1` | 9,161 |
@@ -114,6 +124,27 @@ Module compatibility:
 The SukiSU builds add no exported symbols; `sukisu_only` differs from stock
 only by the KSU code/config and the resulting layout, and `full` has the same
 `Module.symvers` as the Docker-only control.
+
+### Maxest (recommended, v2.0)
+
+Maxest is the largest feature set that keeps the stock vendor module ABI:
+0 CRC mismatches and 0 missing symbols across the 680 stock modules, with
+9,195 exports of which 0 changed and 34 are additive. It is a kernel-only
+release; the stock vendor modules are expected and load unchanged. It targets
+the NX733J (PQ84A01) on the MyOS16.0.4MR / build `20260210.135030` firmware
+family, the same family as the other recipes.
+
+- Feature set and layout deltas: [docs/MAXEST.md](docs/MAXEST.md)
+- Authoritative built config: [configs/maxest.config](configs/maxest.config)
+- Fragment recipe in exact order:
+  [configs/maxest.fragments/FRAGMENTS.txt](configs/maxest.fragments/FRAGMENTS.txt)
+- ABI-preserving source patches: [patches/maxest/](patches/maxest/), with
+  [APPLY.md](patches/maxest/APPLY.md)
+- Release v2.0:
+  https://github.com/Shiro836/nubia-z70-ultra-nx733j-kernel/releases/tag/v2.0
+
+The maxest `Image` is not byte-identical to stock. The recorded boot image is
+the tested artifact; see `docs/MAXEST.md` for its hash and boot-test result.
 
 ### Config fragments
 
@@ -163,6 +194,10 @@ toolchain. Three details matter:
 
 The config hashes are independent of the signing certificate.
 
+The maxest variant is not a byte-identity target. Its recorded hashes identify
+the artifact that passed the gate and the boot test; they are not a claim of
+full reproducibility. See `docs/MAXEST.md`.
+
 ## Module compatibility gate
 
 The stock kernel must load the stock vendor modules. `scripts/crc_check.py`
@@ -201,6 +236,7 @@ boot-tested) are:
 
 | Variant | boot image sha256 |
 |---|---|
+| maxest (v2.0) | `9f259e8f73e78ebcf5371e68225554dcf1b8aa663da87865fcb6804104457a7e` |
 | sukisu_only | `742ac0987601a36aec428cdf3975a46e1aab56a4f9abfb331359260e8f851158` |
 | full | `c9b7834b4b58699456bff49d73511c5cf321f853ecc96fa246223ec58cb7fb6f` |
 | control | `3a28356c3e544a804bf1025d44075aee71e4947c1eb067c3f0d797c0295be6b5` |

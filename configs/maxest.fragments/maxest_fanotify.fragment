@@ -1,0 +1,2 @@
+# Maxest batch 2: fanotify (ucount overflow + hidden union member).
+CONFIG_FANOTIFY=y

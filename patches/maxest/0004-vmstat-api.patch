@@ -1,0 +1,11 @@
+--- a/include/linux/vmstat.h
++++ b/include/linux/vmstat.h
+@@ -82,6 +82,8 @@
+ }
+ 
+ extern void all_vm_events(unsigned long *);
++/* In-kernel variant that also reports events added outside the stock ABI. */
++extern void all_vm_events_full(unsigned long *);
+ 
+ extern void vm_events_fold_cpu(int cpu);
+ 

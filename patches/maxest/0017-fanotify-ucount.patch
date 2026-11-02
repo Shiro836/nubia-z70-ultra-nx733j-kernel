@@ -1,0 +1,53 @@
+--- a/include/linux/user_namespace.h
++++ b/include/linux/user_namespace.h
+@@ -52,12 +52,22 @@
+ 	UCOUNT_INOTIFY_WATCHES,
+ #endif
+ #ifdef CONFIG_FANOTIFY
++#ifndef __GENKSYMS__
+ 	UCOUNT_FANOTIFY_GROUPS,
+ 	UCOUNT_FANOTIFY_MARKS,
+ #endif
++#endif
+ 	UCOUNT_COUNTS,
+ };
+ 
++#ifndef __GENKSYMS__
++#ifdef CONFIG_FANOTIFY
++#define UCOUNT_COUNTS_ABI (UCOUNT_COUNTS - 2)
++#else
++#define UCOUNT_COUNTS_ABI UCOUNT_COUNTS
++#endif
++#endif
++
+ enum rlimit_type {
+ 	UCOUNT_RLIMIT_NPROC,
+ 	UCOUNT_RLIMIT_MSGQUEUE,
+@@ -101,11 +111,27 @@
+ 	struct ctl_table_header *sysctls;
+ #endif
+ 	struct ucounts		*ucounts;
++#ifdef CONFIG_FANOTIFY
++#ifdef __GENKSYMS__
+ 	long ucount_max[UCOUNT_COUNTS];
++#else
++	/*
++	 * ABI-sized placeholder at the stock position keeps rlimit_max and the
++	 * KABI reserves at their stock offsets; the real, larger array is
++	 * appended after them.
++	 */
++	long ucount_max_pad[UCOUNT_COUNTS_ABI];
++#endif
++#else
++	long ucount_max[UCOUNT_COUNTS];
++#endif
+ 	long rlimit_max[UCOUNT_RLIMIT_COUNTS];
+ 
+ 	ANDROID_KABI_RESERVE(1);
+ 	ANDROID_KABI_RESERVE(2);
++#if defined(CONFIG_FANOTIFY) && !defined(__GENKSYMS__)
++	long ucount_max[UCOUNT_COUNTS];
++#endif
+ } __randomize_layout;
+ 
+ struct ucounts {

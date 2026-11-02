@@ -1,0 +1,25 @@
+--- a/include/net/netfilter/nf_queue.h
++++ b/include/net/netfilter/nf_queue.h
+@@ -14,12 +14,19 @@
+ 	struct sk_buff		*skb;
+ 	unsigned int		id;
+ 	unsigned int		hook_index;	/* index in hook_entries->hook[] */
+-#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
++	struct nf_hook_state	state;
++	u16			size; /* sizeof(entry) + saved route keys */
++
++#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER) && !defined(__GENKSYMS__)
++	/*
++	 * Appended: the stock layout keeps the offsets of every existing
++	 * member.  The entry is heap-allocated by the kernel and no stock
++	 * module allocates or sizes it; the in-kernel route-key area moves
++	 * consistently because nf_queue_entry_reroute() uses sizeof().
++	 */
+ 	struct net_device	*physin;
+ 	struct net_device	*physout;
+ #endif
+-	struct nf_hook_state	state;
+-	u16			size; /* sizeof(entry) + saved route keys */
+ 
+ 	/* extra space to store route keys */
+ };

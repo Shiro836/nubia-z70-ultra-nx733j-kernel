@@ -1,0 +1,47 @@
+# nftables dataplane, built into the kernel (NF_TABLES core is already =y in
+# nextmax_nft_bridge.fragment).  Built-in avoids adding dozens of module paths
+# to Kleaf's module_outs; these options do not change kernel-side type layouts.
+CONFIG_NF_TABLES_INET=y
+CONFIG_NF_TABLES_IPV4=y
+CONFIG_NF_TABLES_IPV6=y
+CONFIG_NF_TABLES_ARP=y
+CONFIG_NF_TABLES_NETDEV=y
+CONFIG_NF_TABLES_BRIDGE=y
+CONFIG_NFT_COMPAT=y
+CONFIG_NFT_CONNLIMIT=y
+CONFIG_NFT_CT=y
+CONFIG_NFT_DUP_IPV4=y
+CONFIG_NFT_DUP_IPV6=y
+CONFIG_NFT_DUP_NETDEV=y
+CONFIG_NFT_FIB=y
+CONFIG_NFT_FIB_INET=y
+CONFIG_NFT_FIB_IPV4=y
+CONFIG_NFT_FIB_IPV6=y
+CONFIG_NFT_FIB_NETDEV=y
+# CONFIG_NFT_FLOW_OFFLOAD requires CONFIG_NF_FLOW_TABLE, which would add
+# struct netns_ft to struct net; omitted deliberately.
+CONFIG_NFT_FWD_NETDEV=y
+CONFIG_NFT_HASH=y
+CONFIG_NFT_LIMIT=y
+CONFIG_NFT_LOG=y
+CONFIG_NFT_MASQ=y
+CONFIG_NFT_NAT=y
+CONFIG_NFT_NUMGEN=y
+CONFIG_NFT_OSF=y
+CONFIG_NFT_QUEUE=y
+CONFIG_NFT_QUOTA=y
+CONFIG_NFT_REDIR=y
+CONFIG_NFT_REJECT=y
+CONFIG_NFT_REJECT_INET=y
+CONFIG_NFT_REJECT_IPV4=y
+CONFIG_NFT_REJECT_IPV6=y
+CONFIG_NFT_REJECT_NETDEV=y
+CONFIG_NFT_SOCKET=y
+# CONFIG_NFT_SYNPROXY selects NETFILTER_SYNPROXY and SYN_COOKIES, which grow
+# struct tcp_request_sock_ops (mid-struct) and nf_ct_ext's id array; omitted
+# deliberately (would need another relocation).
+CONFIG_NFT_TPROXY=y
+CONFIG_NFT_TUNNEL=y
+CONFIG_NFT_XFRM=y
+CONFIG_NFT_BRIDGE_META=y
+CONFIG_NFT_BRIDGE_REJECT=y

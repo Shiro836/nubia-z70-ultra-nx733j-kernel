@@ -1,0 +1,23 @@
+--- a/include/linux/cgroup-defs.h
++++ b/include/linux/cgroup-defs.h
+@@ -847,12 +847,17 @@
+  */
+ struct sock_cgroup_data {
+ 	struct cgroup	*cgroup; /* v2 */
+-#ifdef CONFIG_CGROUP_NET_CLASSID
+-	u32		classid; /* v1 */
+-#endif
+ #ifdef CONFIG_CGROUP_NET_PRIO
+ 	u16		prioidx; /* v1 */
+ #endif
++#if defined(CONFIG_CGROUP_NET_CLASSID) && !defined(__GENKSYMS__)
++	/*
++	 * Appended after prioidx so it uses the existing tail padding:
++	 * sizeof(struct sock_cgroup_data) stays 16 and cgroup/prioidx keep
++	 * their offsets.  genksyms sees the stock declaration.
++	 */
++	u32		classid; /* v1 */
++#endif
+ };
+ 
+ static inline u16 sock_cgroup_prioidx(const struct sock_cgroup_data *skcd)

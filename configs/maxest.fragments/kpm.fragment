@@ -1,0 +1,2 @@
+# SukiSU KPM (dynamic kernel module loading); selects KALLSYMS/KALLSYMS_ALL.
+CONFIG_KPM=y

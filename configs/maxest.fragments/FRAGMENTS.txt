@@ -1,0 +1,115 @@
+Maxest fragment recipe
+======================
+
+Target tree: AOSP common kernel, branch android15-6.6, commit
+3637f4904cf55eb3e7eccb9d747d754a4e199740 (GKI 6.6.92), BUILD_NUMBER=13944661.
+
+Fragment order
+--------------
+Copy every fragment in this directory into the Kleaf workspace's common/
+directory and list them in this exact order in the kernel_aarch64
+defconfig_fragments list in common/BUILD.bazel:
+
+  1. docker_systemd_v2.fragment
+  2. sysvipc.fragment
+  3. sukisu.fragment
+  4. susfs.fragment
+  5. kpm.fragment
+  6. usb_extra.fragment
+  7. extras_net.fragment
+  8. extras_ipset.fragment
+  9. extras_criu.fragment
+ 10. extras_fs.fragment
+ 11. extras_rndis.fragment
+ 12. extras_zramwb.fragment
+ 13. extras_zswap.fragment
+ 14. nextmax_nft_bridge.fragment
+ 15. nextmax_ipvlan.fragment
+ 16. nextmax_nft_modules.fragment
+ 17. maxest_extra1.fragment
+ 18. maxest_cgroups.fragment
+ 19. maxest_fanotify.fragment
+ 20. maxest_synproxy.fragment
+ 21. maxest_extra3.fragment
+ 22. maxest_extra4.fragment
+ 23. forsen.fragment
+
+Kleaf recipe
+------------
+Inside define_common_kernels, the kernel_aarch64 target carries:
+
+    "defconfig_fragments": [
+        "docker_systemd_v2.fragment",
+        "sysvipc.fragment",
+        "sukisu.fragment",
+        "susfs.fragment",
+        "kpm.fragment",
+        "usb_extra.fragment",
+        "extras_net.fragment",
+        "extras_ipset.fragment",
+        "extras_criu.fragment",
+        "extras_fs.fragment",
+        "extras_rndis.fragment",
+        "extras_zramwb.fragment",
+        "extras_zswap.fragment",
+        "nextmax_nft_bridge.fragment",
+        "nextmax_ipvlan.fragment",
+        "nextmax_nft_modules.fragment",
+        "maxest_extra1.fragment",
+        "maxest_cgroups.fragment",
+        "maxest_fanotify.fragment",
+        "maxest_synproxy.fragment",
+        "maxest_extra3.fragment",
+        "maxest_extra4.fragment",
+        "forsen.fragment",
+    ],
+
+Kleaf applies these after gki_defconfig, in list order. Do not edit
+arch/arm64/configs/gki_defconfig; Kleaf's check_defconfig rejects it.
+
+The maxest source patch series in patches/maxest/ must be applied before the
+build. Several fragments select features whose kernel-side layout is only
+ABI-safe once those relocations are present.
+
+Authoritative config
+--------------------
+configs/maxest.config is the .config produced by the recorded build
+(sha256 96e6825461eba8795cd4abc378396259104cb020a99a15fa79e3375902d8c61e,
+218,830 bytes). It is the authoritative description of the built kernel.
+
+The fragments and their order are the input recipe used for that build. If the
+fragment list and the recorded config ever disagree, the config and the
+recorded artifact hashes are the reference.
+
+Not part of the final recipe
+----------------------------
+nextmax_nft.fragment (NF_TABLES core only) was an ABI-isolation experiment and
+is deliberately not in the ordered list above. nextmax_nft_bridge.fragment
+enables the same core option together with BRIDGE_NETFILTER for the final
+build.
+
+Fragment hashes
+---------------
+7c987b8a8de0480c5fd7c3baf75ca060356c10992333075842cbd8392e0d90fd  docker_systemd_v2.fragment
+26f63b31847aed9e23e696da1d6e50bd6aa5427dd893faccff1e937ace0807f9  sysvipc.fragment
+40c6f3f9dd10b2cdf25222f33e0793c31a2bfefb0d629fceed979f2f1df01ac8  sukisu.fragment
+0a6a610fc4edf6e0af1afc110093fbbfaaf2d9f5d3577b5382a3e74da207a102  susfs.fragment
+c21601796a5102b7457f257340f7290d527e5856780c98b8e942a07cbd23bbb8  kpm.fragment
+f5e129e34a88656bacbfe12af2f9c0fe20956ed54847cf8ce75364c7b67bb7c1  usb_extra.fragment
+140c90a5ec211712b397b8373a4884df63c358153eedb1d1a8c228f1e6657118  extras_net.fragment
+5b813591c168752ed24f3473979cf454814e52ef4a86f190f0a3a86256e5cab0  extras_ipset.fragment
+603284310bc2f85c0e3a170d87acc18c21bc8f2e6aa72ce4ffd410cde412baac  extras_criu.fragment
+d3dc8f3f5e7c626a53ca7ad79760e7e0cef9928dbb73673a4956bc56fe9c2e92  extras_fs.fragment
+5c5ef7191da5c0b6fb86e8d428aec5b9a116a388230c1cc187a714c2cc02eef8  extras_rndis.fragment
+e00593009803c12b62c8140b598a24f14a9d9ebe78916e020f61a75ea46f4d89  extras_zramwb.fragment
+d9cb024275fdc34771c9c328b100b777aed807a5763b4225b4cbd751a67b1050  extras_zswap.fragment
+30799c86da80b2c8997dce60e33d8242554d3a9c97f414123f01d09521d14121  nextmax_nft_bridge.fragment
+96af22fedd96b3f3bbaf287ed5e804a170d3039f0d56751a443a1070dac500d2  nextmax_ipvlan.fragment
+a007fe1adf90719b204d6061a95a22e5d60669b99a0ed240f0c6fc54d470043b  nextmax_nft_modules.fragment
+10bd40dfbf01e1b148ab7b28d5de9be4a028db4ca1f9df79b0456f28a071b11e  maxest_extra1.fragment
+672b79232e79b063aa2657e58d58f9e862c5cd73a3fb8703a847962844c1d7e9  maxest_cgroups.fragment
+a4d2d121fe79d4d840656980b24b6dfb209af7384f48225f4a0e1b8751014a22  maxest_fanotify.fragment
+fa94e70789934602754bd8577ce4a8750ccd03fbade0f828bb5cc7d608852d0a  maxest_synproxy.fragment
+7de951ff08d9aea51e3e065223f61af2c86121712a6fe5c4a3e204887d8e7d6b  maxest_extra3.fragment
+098ababd846137aa304214308afe22b2a67bb7c7ee1dbcf870fea2d472fa0319  maxest_extra4.fragment
+5658fd2fe51d9188830caf77664114dd09ecce4a3fd2cee57fb1233eaf47e0f0  forsen.fragment

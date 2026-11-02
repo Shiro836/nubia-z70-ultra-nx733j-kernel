@@ -1,0 +1,54 @@
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -104,9 +104,6 @@
+ 	/* Shall we try to damage output packets if routing dev changes? */
+ 	u8 sysctl_ip_dynaddr;
+ 	u8 sysctl_ip_early_demux;
+-#ifdef CONFIG_NET_L3_MASTER_DEV
+-	u8 sysctl_raw_l3mdev_accept;
+-#endif
+ 	u8 sysctl_tcp_early_demux;
+ 	u8 sysctl_udp_early_demux;
+ 
+@@ -114,9 +111,6 @@
+ 
+ 	u8 sysctl_fwmark_reflect;
+ 	u8 sysctl_tcp_fwmark_accept;
+-#ifdef CONFIG_NET_L3_MASTER_DEV
+-	u8 sysctl_tcp_l3mdev_accept;
+-#endif
+ 	u8 sysctl_tcp_mtu_probing;
+ 	int sysctl_tcp_mtu_probe_floor;
+ 	int sysctl_tcp_base_mss;
+@@ -198,10 +192,6 @@
+ 	u8 sysctl_fib_notify_on_flag_change;
+ 	u8 sysctl_tcp_syn_linear_timeouts;
+ 
+-#ifdef CONFIG_NET_L3_MASTER_DEV
+-	u8 sysctl_udp_l3mdev_accept;
+-#endif
+-
+ 	u8 sysctl_igmp_llm_reports;
+ 	int sysctl_igmp_max_memberships;
+ 	int sysctl_igmp_max_msf;
+@@ -241,6 +231,20 @@
+ 	atomic_t	rt_genid;
+ 	siphash_key_t	ip_id_key;
+ 
++#ifdef CONFIG_NET_L3_MASTER_DEV
++	/*
++	 * The three l3mdev sysctls occupy the existing KABI reserve: the
++	 * compiler sees three u8s in an 8-byte union, genksyms still sees the
++	 * original u64 reserve, so struct size, every existing offset and the
++	 * exported CRCs are unchanged.
++	 */
++	ANDROID_KABI_USE(1, struct {
++		u8 sysctl_raw_l3mdev_accept;
++		u8 sysctl_tcp_l3mdev_accept;
++		u8 sysctl_udp_l3mdev_accept;
++	});
++#else
+ 	ANDROID_KABI_RESERVE(1);
++#endif
+ };
+ #endif

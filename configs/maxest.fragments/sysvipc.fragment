@@ -1,0 +1,5 @@
+# SysV IPC (makepkg/fakeroot needs SysV message queues).
+# Enables SysV semaphores/shm in task_struct; exported CRCs change, so all
+# modules must be rebuilt with the same option. Keep this header free of the
+# literal config token: Kleaf's defconfig check greps the whole fragment.
+CONFIG_SYSVIPC=y

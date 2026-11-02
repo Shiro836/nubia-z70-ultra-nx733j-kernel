@@ -1,0 +1,32 @@
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -230,10 +230,6 @@
+ 	/* Range enforcement for interrupt charges */
+ 	struct work_struct high_work;
+ 
+-#if defined(CONFIG_MEMCG_KMEM) && defined(CONFIG_ZSWAP)
+-	unsigned long zswap_max;
+-#endif
+-
+ 	unsigned long soft_limit;
+ 
+ 	/* vmpressure notifications */
+@@ -337,7 +333,18 @@
+ #endif
+ 
+ 	// These must be before the flexible array member nodeinfo below
++#if defined(CONFIG_MEMCG_KMEM) && defined(CONFIG_ZSWAP) && \
++	defined(CONFIG_ANDROID_KABI_RESERVE)
++	/*
++	 * zswap_max reuses the existing KABI backport reserve: same size and
++	 * alignment (u64), so struct mem_cgroup keeps its stock size and every
++	 * existing offset.  Under __GENKSYMS__ the macro expands to the reserve
++	 * declaration, keeping the exported CRCs at the stock values.
++	 */
++	ANDROID_BACKPORT_USE(1, unsigned long zswap_max);
++#else
+ 	ANDROID_BACKPORT_RESERVE(1);
++#endif
+ 	ANDROID_BACKPORT_RESERVE(2);
+ 	ANDROID_OEM_DATA_ARRAY(1, 2);
+ 

@@ -1,0 +1,26 @@
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -4657,9 +4657,6 @@
+ 
+ #ifdef CONFIG_SKB_EXTENSIONS
+ enum skb_ext_id {
+-#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
+-	SKB_EXT_BRIDGE_NF,
+-#endif
+ #ifdef CONFIG_XFRM
+ 	SKB_EXT_SEC_PATH,
+ #endif
+@@ -4672,6 +4669,13 @@
+ #if IS_ENABLED(CONFIG_MCTP_FLOWS)
+ 	SKB_EXT_MCTP,
+ #endif
++#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER) && !defined(__GENKSYMS__)
++	/*
++	 * Appended last so that stock modules, built with the pre-
++	 * BRIDGE_NETFILTER enum, keep their numeric skb_ext ids.
++	 */
++	SKB_EXT_BRIDGE_NF,
++#endif
+ 	SKB_EXT_NUM, /* must be last */
+ };
+ 

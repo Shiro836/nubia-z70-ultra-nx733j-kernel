@@ -1,0 +1,24 @@
+# Maxest batch 1: desktop filesystems and self-contained network/USB features
+# that the stock module set does not already provide.
+CONFIG_BTRFS_FS=y
+CONFIG_XFS_FS=y
+CONFIG_CIFS=y
+CONFIG_NFS_FS=y
+CONFIG_NFSD=y
+CONFIG_BONDING=y
+CONFIG_NET_TEAM=y
+CONFIG_NET_TEAM_MODE_BROADCAST=y
+CONFIG_NET_TEAM_MODE_ROUNDROBIN=y
+CONFIG_NET_TEAM_MODE_RANDOM=y
+CONFIG_NET_TEAM_MODE_ACTIVEBACKUP=y
+CONFIG_NET_TEAM_MODE_LOADBALANCE=y
+CONFIG_OPENVSWITCH=y
+CONFIG_ISCSI_TCP=y
+CONFIG_USBIP_CORE=y
+CONFIG_USBIP_HOST=y
+CONFIG_USBIP_VHCI_HCD=y
+CONFIG_SND_USB_AUDIO=y
+CONFIG_USB_VIDEO_CLASS=y
+# CONFIG_FUNCTION_TRACER changes struct module (ftrace_callsites) and
+# task_struct; stock modules embed struct module, so it cannot be enabled.
+# CONFIG_DYNAMIC_DEBUG changes struct ehci_hcd; debug-only, omitted.

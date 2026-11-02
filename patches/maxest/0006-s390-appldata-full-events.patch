@@ -1,0 +1,11 @@
+--- a/arch/s390/appldata/appldata_mem.c
++++ b/arch/s390/appldata/appldata_mem.c
+@@ -82,7 +82,7 @@
+ 	mem_data = data;
+ 	mem_data->sync_count_1++;
+ 
+-	all_vm_events(ev);
++	all_vm_events_full(ev);
+ 	mem_data->pgpgin     = ev[PGPGIN] >> 1;
+ 	mem_data->pgpgout    = ev[PGPGOUT] >> 1;
+ 	mem_data->pswpin     = ev[PSWPIN];

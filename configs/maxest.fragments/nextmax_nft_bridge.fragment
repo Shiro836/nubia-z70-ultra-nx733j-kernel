@@ -1,0 +1,5 @@
+# Next-max ABI experiment: nftables core + bridge netfilter.
+# The struct net ns member is placed in an existing alignment hole and
+# nf_queue_entry/skb_ext changes are appended; all are hidden from genksyms.
+CONFIG_NF_TABLES=y
+CONFIG_BRIDGE_NETFILTER=y
