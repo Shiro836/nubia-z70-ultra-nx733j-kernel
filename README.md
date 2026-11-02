@@ -19,10 +19,11 @@ pinned toolchain reproduces the stock `Image` byte for byte
 device's running config.
 
 The current recommended variant is **maxest**: the largest feature set that
-still passes the stock-module ABI gate, prepared for release v2.0. It is a
-kernel-only build with the stock vendor modules. See
+still passes the stock-module ABI gate, released as v2.1. It is a kernel-only
+build with the stock vendor modules. See
 [docs/MAXEST.md](docs/MAXEST.md) for the feature set, ABI techniques, layout
-deltas and boot-test result.
+deltas and boot-test result, and [docs/KPM.md](docs/KPM.md) for the
+post-build KernelPatch injection that makes KPM work.
 
 Three earlier modified variants are also provided:
 
@@ -125,7 +126,7 @@ The SukiSU builds add no exported symbols; `sukisu_only` differs from stock
 only by the KSU code/config and the resulting layout, and `full` has the same
 `Module.symvers` as the Docker-only control.
 
-### Maxest (recommended, v2.0)
+### Maxest (recommended, v2.1)
 
 Maxest is the largest feature set that keeps the stock vendor module ABI:
 0 CRC mismatches and 0 missing symbols across the 680 stock modules, with
@@ -140,11 +141,15 @@ family, the same family as the other recipes.
   [configs/maxest.fragments/FRAGMENTS.txt](configs/maxest.fragments/FRAGMENTS.txt)
 - ABI-preserving source patches: [patches/maxest/](patches/maxest/), with
   [APPLY.md](patches/maxest/APPLY.md)
-- Release v2.0:
-  https://github.com/Shiro836/nubia-z70-ultra-nx733j-kernel/releases/tag/v2.0
+- KPM engine injection: [docs/KPM.md](docs/KPM.md),
+  [scripts/inject-kernelpatch.sh](scripts/inject-kernelpatch.sh)
+- Release v2.1:
+  https://github.com/Shiro836/nubia-z70-ultra-nx733j-kernel/releases/tag/v2.1
 
 The maxest `Image` is not byte-identical to stock. The recorded boot image is
 the tested artifact; see `docs/MAXEST.md` for its hash and boot-test result.
+KPM needs the KernelPatch injection described in `docs/KPM.md`; a plain source
+build contains only SukiSU's bridge.
 
 ### Config fragments
 
@@ -170,7 +175,12 @@ rebuilt. `NF_TABLES` and `BRIDGE_NETFILTER` are also excluded: they alter
 `struct sk_buff` and produced 8,263 mismatches in an earlier experiment.
 
 `configs/sukisu.fragment` sets `CONFIG_KSU=y` and `CONFIG_KSU_MANUAL_SU=y` and
-leaves KPM, debug and manager-disable options off.
+leaves KPM, debug and manager-disable options off. This note applies to that
+older minimal fragment only. The maxest fragments enable `CONFIG_KPM=y`, but
+that builds SukiSU's KPM bridge, not the engine: the engine is KernelPatch,
+injected into the built `Image` with `kptools`/`kpimg` after compilation (see
+[docs/KPM.md](docs/KPM.md)). A source rebuild without that step reports KPM as
+unsupported.
 
 ## Reproducing the exact hashes
 
@@ -236,7 +246,8 @@ boot-tested) are:
 
 | Variant | boot image sha256 |
 |---|---|
-| maxest (v2.0) | `9f259e8f73e78ebcf5371e68225554dcf1b8aa663da87865fcb6804104457a7e` |
+| maxest + KPM (v2.1) | `6aef3dc1690bca93f5ed9a76b5e31c8cb4997ab340fc244cb57e4e77f4c37cfd` |
+| maxest (v2.0, no KPM engine) | `9f259e8f73e78ebcf5371e68225554dcf1b8aa663da87865fcb6804104457a7e` |
 | sukisu_only | `742ac0987601a36aec428cdf3975a46e1aab56a4f9abfb331359260e8f851158` |
 | full | `c9b7834b4b58699456bff49d73511c5cf321f853ecc96fa246223ec58cb7fb6f` |
 | control | `3a28356c3e544a804bf1025d44075aee71e4947c1eb067c3f0d797c0295be6b5` |

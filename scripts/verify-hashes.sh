@@ -6,7 +6,7 @@
 #   ./scripts/verify-hashes.sh artifacts DIR VARIANT
 #   ./scripts/verify-hashes.sh boot IMAGE     VARIANT
 #
-# VARIANT: stock | sukisu_only | full | control
+# VARIANT: stock | sukisu_only | full | control | maxest | maxest-kpm
 #
 # "stock" is the unmodified GKI build. "control" is the Docker/systemd-only
 # build (no SukiSU). The artifacts directory must contain Image, config and
@@ -69,6 +69,16 @@ case "$MODE" in
         check "$DIR/config"            "182a72756294b93e89869f98295d9ef8ade0cde919c5ac203078795efdd36675"
         check "$DIR/Module.symvers"    "e0785b239df0a4123c859fe7939adfe6d048a343098572bb998642fe78d1aca1"
         ;;
+      maxest)
+        check "$DIR/Image"             "f1f488c6f2d975e4202b054073dbf5ac4f4823d0185bea8373b82e2abe606e82"
+        check "$DIR/config"            "96e6825461eba8795cd4abc378396259104cb020a99a15fa79e3375902d8c61e"
+        check "$DIR/Module.symvers"    "3e4befb4681985494c22649bda0669ef2459f15aa109280f70248521cdac7331"
+        ;;
+      maxest-kpm)
+        check "$DIR/Image"             "2c7e7c196c7b98fb651e318245f915342e6814ba7ea7a99b327957091d960d94"
+        check "$DIR/config"            "96e6825461eba8795cd4abc378396259104cb020a99a15fa79e3375902d8c61e"
+        check "$DIR/Module.symvers"    "3e4befb4681985494c22649bda0669ef2459f15aa109280f70248521cdac7331"
+        ;;
       *) echo "unknown variant: $VARIANT" >&2; exit 2 ;;
     esac
     ;;
@@ -81,7 +91,9 @@ case "$MODE" in
       sukisu_only) check "$IMAGE" "742ac0987601a36aec428cdf3975a46e1aab56a4f9abfb331359260e8f851158" ;;
       full)        check "$IMAGE" "c9b7834b4b58699456bff49d73511c5cf321f853ecc96fa246223ec58cb7fb6f" ;;
       control)     check "$IMAGE" "3a28356c3e544a804bf1025d44075aee71e4947c1eb067c3f0d797c0295be6b5" ;;
-      *) echo "unknown variant: $VARIANT (sukisu_only|full|control)" >&2; exit 2 ;;
+      maxest)      check "$IMAGE" "9f259e8f73e78ebcf5371e68225554dcf1b8aa663da87865fcb6804104457a7e" ;;
+      maxest-kpm)  check "$IMAGE" "6aef3dc1690bca93f5ed9a76b5e31c8cb4997ab340fc244cb57e4e77f4c37cfd" ;;
+      *) echo "unknown variant: $VARIANT (sukisu_only|full|control|maxest|maxest-kpm)" >&2; exit 2 ;;
     esac
     ;;
 

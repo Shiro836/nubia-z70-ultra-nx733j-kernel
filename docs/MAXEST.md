@@ -6,7 +6,7 @@ modules** and the kernel exports **0 changed CRCs**. It is a kernel-only
 release. The stock vendor modules are expected and load unchanged; module-only
 drivers enabled by this config are not part of the kernel release.
 
-It is the recommended build for the NX733J and is prepared for release v2.0.
+It is the recommended build for the NX733J and is released as v2.1.
 
 ## Target
 
@@ -47,7 +47,9 @@ SUSFS and KPM.
   USB Ethernet (usbnet, cdc_ether, rndis_host, asix, cdc_subset, smsc95xx,
   smsc75xx), USB ACM, uinput, USB audio, UVC, USB gadget RNDIS.
 - **Bluetooth:** USB HCI (btusb with Intel/Realtek support).
-- **Root/extension:** SukiSU Ultra built in, SUSFS, KPM.
+- **Root/extension:** SukiSU Ultra built in, SUSFS, KPM. `CONFIG_KPM=y`
+  builds SukiSU's KPM bridge; the KernelPatch engine is injected after the
+  build (see `docs/KPM.md`).
 
 ## ABI-preserving techniques
 
@@ -132,6 +134,19 @@ duplicate stock modules:
    BUILD_NUMBER=13944661 ./tools/bazel build --config=android_ci //common:kernel_aarch64
    ```
 
+5. For a KPM-capable image, inject the pinned KernelPatch payload into the
+   built `Image` and package it (see `docs/KPM.md`):
+
+   ```bash
+   KERNEL_IMAGE=/path/to/Image KPTOOLS=/path/to/kptools \
+   KPIMG=/path/to/kpimg SUPERKEY='your-supercall-key' \
+     ./scripts/inject-kernelpatch.sh /path/to/Image.kpm
+
+   STOCK_BOOT_IMG=/path/to/your/stock_boot_a.img \
+   KERNEL_IMAGE=/path/to/Image.kpm \
+     ./scripts/build-boot-image.sh /path/to/boot_kpm.img
+   ```
+
 `configs/maxest.config` is the `.config` produced by the recorded build and is
 authoritative. The fragments are the reproducible input recipe. The full config
 is the reference if the two ever disagree.
@@ -144,10 +159,12 @@ gating.
 
 | Artifact | Size | SHA-256 |
 |---|---|---|
-| Kernel `Image` | 51,915,264 B | `f1f488c6f2d975e4202b054073dbf5ac4f4823d0185bea8373b82e2abe606e82` |
+| Kernel `Image` (source build) | 51,915,264 B | `f1f488c6f2d975e4202b054073dbf5ac4f4823d0185bea8373b82e2abe606e82` |
 | Built config | 218,830 B | `96e6825461eba8795cd4abc378396259104cb020a99a15fa79e3375902d8c61e` |
 | `Module.symvers` | 568,716 B | `3e4befb4681985494c22649bda0669ef2459f15aa109280f70248521cdac7331` |
-| OEM-signature boot image | 100,663,296 B | `9f259e8f73e78ebcf5371e68225554dcf1b8aa663da87865fcb6804104457a7e` |
+| KPM-injected `Image` (v2.1) | 52,211,312 B | `2c7e7c196c7b98fb651e318245f915342e6814ba7ea7a99b327957091d960d94` |
+| OEM-signature boot image (v2.1, KPM) | 100,663,296 B | `6aef3dc1690bca93f5ed9a76b5e31c8cb4997ab340fc244cb57e4e77f4c37cfd` |
+| OEM-signature boot image (v2.0, no KPM engine) | 100,663,296 B | `9f259e8f73e78ebcf5371e68225554dcf1b8aa663da87865fcb6804104457a7e` |
 
 Recorded gate:
 
@@ -162,14 +179,20 @@ rebuild the whole module set with the same options and gate it against the new
 
 ## Boot test
 
-The boot image was flashed to `boot_a` on 2026-11-02 and verified
-byte-for-byte on readback. It booted: `sys.boot_completed=1`, slot `_a`, 473
-modules loaded, SELinux enforcing, wlan/zygote/SurfaceFlinger up, and no
-panic/Oops/BUG. The device reported `verifiedbootstate=orange` (unlocked custom
-boot). `vbmeta_a` was not modified.
+The KPM boot image (`6aef3dc1…`) was flashed to `boot_a` on 2026-11-03 and
+verified byte-for-byte on readback. It booted: `sys.boot_completed=1`, slot
+`_a`, 472 modules loaded (the earlier "473 modules" figure was `lsmod`'s header
+line), SELinux enforcing, wlan/zygote/SurfaceFlinger up, and no panic/Oops/BUG.
+`ksud extension check kpm` reports `supported`; `ksud kpm version` reports
+`3584 (20:07:48 Oct 27 2026)`. The device reported `verifiedbootstate=orange`
+(unlocked custom boot). `vbmeta_a` was not modified.
 
-This is a hardware test result for that image and that firmware. It is not a
-claim that every unit or firmware revision behaves identically.
+The v2.0 image (`9f259e8f…`) booted on 2026-11-02 with the same source kernel
+but without the KernelPatch engine; KPM reported unsupported there, which is
+why v2.1 supersedes it.
+
+These are hardware test results for those images and that firmware. They are
+not claims that every unit or firmware revision behaves identically.
 
 ## Packaging and rollback
 
@@ -194,7 +217,9 @@ GPT slot attributes; see `docs/RECOVERY.md`.
   artifacts; they are not a claim of full reproducibility.
 - **ZSWAP is off by default.** Enable it explicitly if wanted.
 - **SUSFS and KPM sources are not vendored.** Follow the SukiSU recipe in
-  `patches/README.md` and the fragment comments.
+  `patches/README.md` and the fragment comments. `CONFIG_KPM=y` is only the
+  bridge; the KernelPatch engine must be injected after the build
+  (`docs/KPM.md`). The recorded builds used superkey `123` (test-only).
 - **Local release string.** `forsen.fragment` sets
   `CONFIG_LOCALVERSION="-4k-forsen"`; this is part of the recorded build.
 - **No warranty.** Flashing a kernel can make the device unbootable.

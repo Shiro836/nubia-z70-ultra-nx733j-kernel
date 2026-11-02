@@ -76,6 +76,10 @@ from `https://codeload.github.com/SukiSU-Ultra/SukiSU-Ultra/tar.gz/refs/tags/v4.
   Kconfig therefore enables KSU even without `sukisu.fragment`; the fragment is
   kept for explicitness and pins `CONFIG_KSU_MANUAL_SU` while leaving KPM,
   debug and manager-disable options off.
+- The maxest fragments turn `CONFIG_KPM=y` on, but that only builds SukiSU's
+  KPM bridge. The engine is KernelPatch (`kpimg`), injected into the compiled
+  `Image` with `kptools` after the build; it is not part of this source patch
+  series. See `docs/KPM.md` and `scripts/inject-kernelpatch.sh`.
 - The integration adds no exported symbols. `Module.symvers` is unchanged by
   SukiSU in the recorded builds.
 - No stock kernel source file other than `BUILD.bazel`, `drivers/Kconfig` and
